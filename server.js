@@ -1,24 +1,39 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
+const dbConnect = require('./config/dbConnect');
+const verifyJWT = require('./middleware/verifyJWT');
+const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT;
+
+dbConnect();
 
 // middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: false })); 
+app.use(cookieParser()); 
 
 // routes
+app.use('/reg', require('./routes/reg'));
+app.use('/auth', require('./routes/auth'));
+app.use('/refresh', require('./routes/refresh'))
+app.use('/logout', require('./routes/logout'))
+
+app.use(verifyJWT);
 app.use('/addresses', require('./routes/api/addresses'));
 
-//route handlers
-app.get('/', (req, res) => {
-    res.send("Hello World");
-})
+
 app.all('*', (req, res) => {
-    res.status(404).json({ err: "404 - not found" })
+    res.status(404).json({ "message": "404 - not found" })
 })
 
-//listen on port
-app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+
+// if connected to mongoDB, listen for requests
+mongoose.connection.once('connected', () => {
+    console.log('Connected to MongoDB')
+    app.listen(PORT, () => {
+        console.log(`Listening on port ${PORT}`);
+    })
 })
+
