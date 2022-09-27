@@ -15,13 +15,12 @@ const handleLogin = async (req, res) => {
     // check that passwords match, if so -> sent tokens to frontend and save refresh token to db
     const pwdsMatch = await bcrypt.compare(pwd, currentUser.password);
     if (pwdsMatch) {
-        const roles = Object.values(currentUser.roles);
         // make tokens
         const accessToken = jwt.sign({
             'UserInfo': {
                 'username': currentUser.username,
-                'roles': roles
-            }
+                'id': currentUser._id
+             }
         },
             process.env.JWT_ACCESS_TOKEN_SECRET,
             { 'expiresIn': '60s' }
@@ -36,9 +35,11 @@ const handleLogin = async (req, res) => {
         currentUser.refreshToken = refreshToken;
         const result = await currentUser.save();
         console.log(result);
+
         // send tokens to the frontend
         res.cookie('jwt', refreshToken, {'httpOnly': true, samesite: 'None', maxAge: 24 * 60 * 60 * 1000}); // In production - secure:true
         res.json({accessToken});
+
     } else {
         res.sendStatus(401); 
     }

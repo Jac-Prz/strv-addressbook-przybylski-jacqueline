@@ -3,11 +3,13 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const dbConnect = require('./config/dbConnect');
+const firebaseInit = require('./config/firebaseInit');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT;
 
 dbConnect();
+firebaseInit();
 
 // middleware
 app.use(express.json());

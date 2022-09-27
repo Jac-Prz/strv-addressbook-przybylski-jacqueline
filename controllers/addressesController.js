@@ -1,65 +1,51 @@
-// These are the basic CRUD operations we will need. Currently working with sample data from a json. Will integrate with Firebase instead
-
-const data = {
-    addresses: require('../model/addresses.json'),
-    setAddresses: function (data) { this.addresses = data }
-}
+const { getDatabase, ref, set, onValue, remove, update } = require('firebase/database');
+const db = getDatabase();
 
 const getAllAddresses = (req, res) => {
-    res.json(data.addresses);
+     const reference = ref(db, `${req.id}`);
+    onValue(reference, (snapshot) => {
+        const data = snapshot.val();
+        res.json(data);
+    })
 }
 
 const getAddress = async (req, res) => {
-    const address = await data.addresses.find(ad => ad.id == req.params.id)
-    if (!address) {
-        res.status(400).json({ err: `id: ${req.params.id} doesnt exist` })
-    } else {
-        res.json(address)
-    }
+    
+    const reference = ref(db, `${req.id}/${req.params.id}`);
+    onValue(reference, (snapshot) => {
+        const data = snapshot.val();
+        res.json(data);
+    })
 }
 
 const createNewAddress = (req, res) => {
-    const newAddress = {
-        "id": data.addresses[data.addresses.length - 1].id + 1 || 1,
-        "firstName": req.body.firstName,
-        "lastName": req.body.lastName,
-        "phone": req.body.phone,
-        "address": req.body.address
-    }
-
-    if (!req.body.firstName || !req.body.lastName || !req.body.phone || !req.body.address) {
-        return res.status(400).json({ err: "All fields are required" });
-    } else {
-        data.setAddresses([...data.addresses, newAddress]);
-        res.status(201).json({ success: `${req.body.firstName} ${req.body.lastName} was added to address book` });
-    }
+    if (!req.body.firstName || !req.body.lastName || !req.body.phone || !req.body.address) return res.status(400).json({ "message": "All fields are required" });
+    
+    const reference = ref(db, `${req.id}/${req.body.lastName}-${req.body.firstName}`);
+    set(reference, {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        phone: req.body.phone,
+        address: req.body.address
+    });
+    res.status(201).json({ success: `${req.body.lastName}-${req.body.firstName} was added to address book` });
 }
 
 const updateAddress = (req, res) => {
-    const address = data.addresses.find(ad => ad.id == req.body.id);
-    if (!address) {
-        res.status(400).json({ err: `id: ${req.body.id} doesnt exist` });
-    } else{
-        if (req.body.firstName) address.firstName = req.body.firstName;
-        if (req.body.lastName) address.lastName = req.body.lastName;
-        if (req.body.phone) address.phone = req.body.phone;
-        if (req.body.address) address.address = req.body.address;
-        const newData = data.addresses.filter(ad => ad.id !== req.body.id);
-        data.setAddresses([...newData, address]);
-        console.log(data.addresses);
-        res.json({ success: `id: ${req.body.id} has been updated` })
-    }   
+
+    //this will delete all other data
+    const updates = {};
+    const updateData = req.body.update;
+    updates[`${req.id}/${req.body.name}`] = updateData;
+    update(ref(db), updates);
+    res.json({'message': `${req.body.name} updated`})
+
 }
 
 const deleteAddress = (req, res) => {
-    const address = data.addresses.find(ad => ad.id == req.body.id)
-    if (!address) {
-        res.status(400).json({ err: `id: ${req.body.id} doesnt exist` });
-    } else {
-        const newData = data.addresses.filter(ad => ad.id !== req.body.id)
-        data.setAddresses([...newData]);
-        res.json({ success: `id: ${req.body.id} has been deleted` })
-    }
+    //should check if db exists first
+     remove(ref(db, `${req.id}/${req.body.name}`));
+    res.json({ 'message': `${req.body.name} deleted` });
 }
 
 module.exports = { getAllAddresses, getAddress, createNewAddress, updateAddress, deleteAddress }

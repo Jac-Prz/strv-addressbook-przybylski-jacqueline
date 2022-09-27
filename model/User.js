@@ -10,12 +10,6 @@ const userSchema = new Schema({
         type: String, 
         required: true
     }, 
-    roles: {
-        User: {
-            type: Number, 
-            default: 1000
-        }
-    }, 
     refreshToken: String
 });
 
