@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+const cors = require('cors');
+const corsConfig = require('./config/corsConfig');
 const mongoose = require('mongoose');
 const dbConnect = require('./config/dbConnect');
 const firebaseInit = require('./config/firebaseInit');
@@ -12,11 +14,15 @@ dbConnect();
 firebaseInit();
 
 // middleware
+app.use(cors(corsConfig))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); 
 app.use(cookieParser()); 
 
 // routes
+app.get('/', (req, res) => {
+    res.send('hello world');
+})
 app.use('/reg', require('./routes/reg'));
 app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'))

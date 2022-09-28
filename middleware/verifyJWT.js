@@ -10,9 +10,8 @@ const verifyJWT = (req, res, next) => {
         (err, decodedInfo) => {
             if (err) return res.sendStatus(403) //forbidden
             //we pass in a username to the jwt. so now the username will be equal to the decoded info from the JWT
-            req.user = decodedInfo.UserInfo.username;
-            req.id = decodedInfo.UserInfo.id;
-            next()
+            req.userEmail = decodedInfo.email;
+              next()
         }
     )
 }

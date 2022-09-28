@@ -9,7 +9,7 @@ const currentUser = await User.findOne({refreshToken}).exec();
 currentUser.refreshToken = '';
 const result = await currentUser.save();
 console.log(result);
-res.clearCookie('jwt', {httpOnly: true, samesite: 'None'}); // In production - secure:true
+res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure:true});
 res.sendStatus(204)
 }
 

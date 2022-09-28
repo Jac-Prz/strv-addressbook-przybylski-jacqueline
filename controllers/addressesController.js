@@ -4,7 +4,7 @@ const db = getFirestore();
 const createNewAddress = async (req, res) => {
     if (!req.body.firstName || !req.body.lastName || !req.body.phone || !req.body.address) return res.status(400).json({ "message": "All fields are required" });
     try {
-        const docRef = db.collection(req.id).doc(`${req.body.lastName}-${req.body.firstName}`)
+        const docRef = db.collection(req.userEmail).doc(`${req.body.lastName}-${req.body.firstName}`)
         const response = await docRef.set({
             firstName: req.body.firstName,
             lastName: req.body.lastName,

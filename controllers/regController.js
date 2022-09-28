@@ -1,27 +1,48 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 const registerNewUser = async (req, res) => {
 
     // check that we have a username and password
-    const { user, pwd } = req.body;
-    if (!user || !pwd) return res.status(400).json({'message': 'Username and password are required.'});
-    
+    const { email, pwd } = req.body;
+    if (!email || !pwd) return res.status(400).json({ 'message': 'Email and password are required.' });
+
     // check that the username doesnt already exist
-    const duplicate = await User.findOne({username: user}).exec();
-    if (duplicate) return res.sendStatus(409);
-    
+    const duplicate = await User.findOne({ email }).exec();
+    if (duplicate) return res.status(409).json({"message": "Email is already registered in our system"});
+
     // hash the password and save credentials to db
     try {
         const hashedPwd = await bcrypt.hash(pwd, 10);
         const result = await User.create({
-            'username': user, 
+            'email': email,
             'password': hashedPwd
         })
-        res.status(201).json({"success": `New user ${user} added to database`})
+        console.log({ "success": `New user ${email} added to database` })
     } catch (err) {
         res.status(500).json({ 'message': err.message })
     }
+
+    // make tokens
+    const accessToken = jwt.sign(
+        { 'email': email },
+        process.env.JWT_ACCESS_TOKEN_SECRET,
+        { 'expiresIn': '30m' }
+    );
+    const refreshToken = jwt.sign(
+        { 'email': email },
+        process.env.JWT_REFRESH_TOKEN_SECRET,
+        { 'expiresIn': '1d' }
+    );
+    // save refresh token in db
+     
+     const result = await User.findOneAndUpdate({email}, {refreshToken});
+    console.log(result);
+
+    // send tokens to the frontend
+    res.cookie('jwt', refreshToken, { 'httpOnly': true, samesite: 'None', secure:true, maxAge: 24 * 60 * 60 * 1000 });
+    res.json({ accessToken });
 
 };
 
