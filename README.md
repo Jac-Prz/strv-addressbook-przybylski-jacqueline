@@ -1,4 +1,4 @@
- <h3 align="center"> align="center">STRV Assignment: Address Book RESTful API<h3>
+ <h2 align="center"> STRV Assignment: Address Book RESTful API <h2>
 
 Users can to register/login with an email and password. Once issued JWS access key they can add an entry to their address book.
 Users are stored on MongoDB and the address book on firebase.
@@ -7,7 +7,7 @@ The other CRUD operations to the adressbook will be handled by a frontend.
 Endpoint: https://strv-addressbook-przybylski-jacqueline.onrender.com/
 (hosted free on render, may take up to 30 seconds to start up)
 
------- API Basic Functions ------
+<h3 align="center"> ------ API Basic Functions ------ <h3>
 REGISTER a new user: 
 - POST request to '/register'
 - 'email' and 'pwd' are required
