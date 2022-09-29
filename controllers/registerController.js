@@ -31,7 +31,7 @@ const registerNewUser = async (req, res) => {
     const result = await User.findOneAndUpdate({ email }, { refreshToken });
 
     // send tokens to the frontend
-    res.cookie('jwt', refreshToken, { 'httpOnly': true, samesite: 'None',  maxAge: 24 * 60 * 60 * 1000 }); //secure: true,
+    res.cookie('jwt', refreshToken, { 'httpOnly': true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
     res.status(201).json({ accessToken });
 
 };

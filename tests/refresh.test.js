@@ -2,6 +2,8 @@ const request = require('supertest');
 const app = require('../server');
 const User = require('../model/User');
 
+//if testing locally, remove secure:true from cookies (authController, logoutController, registerController)
+
 beforeEach(async () => {
     await request(app).post('/register')
         .send({

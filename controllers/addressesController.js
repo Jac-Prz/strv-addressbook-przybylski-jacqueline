@@ -21,7 +21,7 @@ const createNewAddress = async (req, res) => {
         });
     } catch (error) {
         res.status(400).json({ error });
-    }
-}
+    };
+};
 
 module.exports = { createNewAddress }

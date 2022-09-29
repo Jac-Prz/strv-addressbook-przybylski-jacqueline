@@ -10,7 +10,6 @@ const firebaseInit = require('./config/firebaseInit');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 
-
 // connect databases
 dbConnect();
 firebaseInit();
@@ -32,13 +31,11 @@ app.use('/logout', require('./routes/logout'))
 app.use(verifyJWT);
 app.use('/addresses', require('./routes/api/addresses'));
 
-
-module.exports = app
-// mongoose.connection.once('connected', () => {
-//     console.log('Connected to MongoDB')
-//     app.listen(PORT, () => {
-//         console.log(`Listening on port ${PORT}`);
-//     })
-// })
+mongoose.connection.once('connected', () => {
+    console.log('Connected to MongoDB')
+    app.listen(PORT, () => {
+        console.log(`Listening on port ${PORT}`);
+    })
+})
 
 
