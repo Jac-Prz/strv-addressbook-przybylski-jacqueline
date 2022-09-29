@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {registerNewUser} = require('../controllers/regController');
+const {registerNewUser} = require('../controllers/registerController');
 const methodNotAllowed = require('../controllers/methodNotAllowed');
 
 router.route('/') 

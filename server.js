@@ -23,7 +23,7 @@ app.use(cookieParser());
 
 // routes
 app.get('/', (req, res) => { res.send("Address Book API"); });
-app.use('/reg', require('./routes/reg'));
+app.use('/register', require('./routes/register'));
 app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'))
 app.use('/logout', require('./routes/logout'))
@@ -32,11 +32,13 @@ app.use('/logout', require('./routes/logout'))
 app.use(verifyJWT);
 app.use('/addresses', require('./routes/api/addresses'));
 
-mongoose.connection.once('connected', () => {
-    console.log('Connected to MongoDB')
-    app.listen(PORT, () => {
-        console.log(`Listening on port ${PORT}`);
-    })
-})
+
+module.exports = app
+// mongoose.connection.once('connected', () => {
+//     console.log('Connected to MongoDB')
+//     app.listen(PORT, () => {
+//         console.log(`Listening on port ${PORT}`);
+//     })
+// })
 
 

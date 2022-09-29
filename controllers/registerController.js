@@ -1,6 +1,6 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+const { createAccessToken, createRefreshToken } = require('../modules/tokens')
 
 const registerNewUser = async (req, res) => {
 
@@ -23,23 +23,15 @@ const registerNewUser = async (req, res) => {
         res.status(500).json({ 'message': err.message })
     }
 
-    // make access and refresh tokens
-    const accessToken = jwt.sign(
-        { 'email': email },
-        process.env.JWT_ACCESS_TOKEN_SECRET,
-        { 'expiresIn': '30m' }
-    );
-    const refreshToken = jwt.sign(
-        { 'email': email },
-        process.env.JWT_REFRESH_TOKEN_SECRET,
-        { 'expiresIn': '1d' }
-    );
+    // make tokens
+    const accessToken = createAccessToken(email);
+    const refreshToken = createRefreshToken(email);
 
     // save refresh token in db
     const result = await User.findOneAndUpdate({ email }, { refreshToken });
 
     // send tokens to the frontend
-    res.cookie('jwt', refreshToken, { 'httpOnly': true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+    res.cookie('jwt', refreshToken, { 'httpOnly': true, samesite: 'None',  maxAge: 24 * 60 * 60 * 1000 }); //secure: true,
     res.status(201).json({ accessToken });
 
 };

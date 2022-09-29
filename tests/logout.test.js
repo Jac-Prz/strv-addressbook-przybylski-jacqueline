@@ -1,26 +1,33 @@
 const app = require('../server');
 const request = require('supertest');
-const User = require('../model/User')
+const User = require('../model/User');
 
-afterEach(async () => { await User.deleteMany() })
-
-
-test("if 204 when not logged in", async () => {
-    const response = request(app).get("/logout")
-        .expect(204)
-});
-
-
-test("should clear refresh token from db", async () => {
-    const regResponse = await request(app).post('/reg')
+beforeEach(async () => {
+    register = await request(app).post('/register')
         .send({
             email: "logout.test@email.com",
             pwd: "logout1234"
-        })
-        .expect(201)
-    const logoutResponse = request(app).get("/logout")
-        .expect(204)
-    const user = await User.findOne({ email: "logout.test@email.com" })
-    expect(!user.refreshToken)
+        });
+});
 
-})
+afterEach(async () => { await User.deleteMany() });
+
+describe("no cookies in the logout request", () => {
+    test("should respond with 204", async () => {
+        const response = request(app).get("/logout")
+            .expect(204)
+    });
+});
+
+describe("logout and remove refresh tokens", () => {
+    test("should clear refresh token from db", async () => {
+        const user = await User.findOne({ email: "logout.test@email.com" });
+        const logoutResponse = await request(app).get("/logout")
+            .set('Cookie', `jwt=${user.refreshToken}`)
+            .set('Content-Type', `application/json`)
+            .expect(204);
+        const userAfterLogout = await User.findOne({ email: "logout.test@email.com" });
+        expect(userAfterLogout.refreshToken).toHaveLength(0);
+    });
+});
+
