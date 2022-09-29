@@ -3,13 +3,13 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const corsConfig = require('./config/corsConfig');
-const mongoose = require('mongoose');
 const dbConnect = require('./config/dbConnect');
 const firebaseInit = require('./config/firebaseInit');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
-const PORT = process.env.PORT;
+const User = require('./model/User')
 
+// connect databases
 dbConnect();
 firebaseInit();
 
@@ -21,27 +21,25 @@ app.use(cookieParser());
 
 // routes
 app.get('/', (req, res) => {
-    res.send('hello world');
+    res.send("Address Book API");
 })
+
+//testing route - delete before production
+app.delete('/deleteUser', async (req, res) => {
+const response =  await User.deleteOne({email: req.body.email});
+res.json(response);
+})
+
 app.use('/reg', require('./routes/reg'));
 app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'))
 app.use('/logout', require('./routes/logout'))
 
+//protected route
 app.use(verifyJWT);
 app.use('/addresses', require('./routes/api/addresses'));
 
 
-app.all('*', (req, res) => {
-    res.status(404).json({ "message": "404 - not found" })
-})
+module.exports = app;
 
-
-// if connected to mongoDB, listen for requests
-mongoose.connection.once('connected', () => {
-    console.log('Connected to MongoDB')
-    app.listen(PORT, () => {
-        console.log(`Listening on port ${PORT}`);
-    })
-})
 

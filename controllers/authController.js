@@ -4,15 +4,15 @@ const jwt = require('jsonwebtoken');
 
 const handleLogin = async (req, res) => {
 
-    // check that we have a username and password
+    // check we have email + password
     const { email, pwd } = req.body;
     if (!email || !pwd) return res.status(400).json({ 'message': 'Email and password are required.' });
 
-    // check that user exists
+    // check user exists
     const currentUser = await User.findOne({ email }).exec();
-    if (!currentUser) return res.status(401).json({ "message": "User doesnt exist" });
+    if (!currentUser) return res.status(401).json({ 'message': 'Email is not in our system' });
 
-    // check that passwords match, if so -> sent tokens to frontend and save refresh token to db
+    // check passwords match -> sent tokens to frontend and save refresh token to db
     const pwdsMatch = await bcrypt.compare(pwd, currentUser.password);
     if (pwdsMatch) {
         // make tokens
@@ -34,7 +34,7 @@ const handleLogin = async (req, res) => {
         console.log(result);
 
         // send tokens to the frontend
-        res.cookie('jwt', refreshToken, {'httpOnly': true, samesite: 'None', maxAge: 24 * 60 * 60 * 1000}); // In production - secure:true
+        res.cookie('jwt', refreshToken, {'httpOnly': true, samesite: 'None', secure:true, maxAge: 24 * 60 * 60 * 1000});
         res.json({accessToken});
 
     } else {
