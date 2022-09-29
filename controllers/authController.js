@@ -6,11 +6,11 @@ const handleLogin = async (req, res) => {
 
     // check we have email + password
     const { email, pwd } = req.body;
-    if (!email || !pwd) return res.status(400).json({ 'message': 'Email and password are required.' });
+    if (!email || !pwd) return res.status(400).json({message: 'Email and password are required.' });
 
     // check user exists
     const currentUser = await User.findOne({ email }).exec();
-    if (!currentUser) return res.status(401).json({ 'message': 'Email is not in our system' });
+    if (!currentUser) return res.status(401).json({ message: 'Email is not in our system' });
 
     // check passwords match -> sent tokens to frontend and save refresh token to db
     const pwdsMatch = await bcrypt.compare(pwd, currentUser.password);
@@ -34,7 +34,7 @@ const handleLogin = async (req, res) => {
         console.log(result);
 
         // send tokens to the frontend
-        res.cookie('jwt', refreshToken, {'httpOnly': true, samesite: 'None', secure:true, maxAge: 24 * 60 * 60 * 1000});
+        res.cookie('jwt', refreshToken, {'httpOnly': true, samesite: 'None',  maxAge: 24 * 60 * 60 * 1000}); //secure:true in production
         res.json({accessToken});
 
     } else {

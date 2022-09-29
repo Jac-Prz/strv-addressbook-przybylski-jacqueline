@@ -3,15 +3,10 @@ const request = require('supertest');
 
 //integration tests for reg route
 
-// 400 if missing email or password
-// 401 if user doesnt exist
-// if correct user: auth token sent, refresh token sent 
-
-
 describe("send err if username or password is not recieved", () => {
     test("no pwd", (done) => {
         request(app)
-            .post("/auth")
+            .post("/reg")
             .expect("Content-Type", /json/)
             .send({
                 email: "testeroo@test.com"
@@ -27,7 +22,7 @@ describe("send err if username or password is not recieved", () => {
     });
     test("no email", (done) => {
         request(app)
-            .post("/auth")
+            .post("/reg")
             .expect("Content-Type", /json/)
             .send({
                 pwd: "123456"
@@ -43,7 +38,7 @@ describe("send err if username or password is not recieved", () => {
     });
     test("empty pwd", (done) => {
         request(app)
-            .post("/auth")
+            .post("/reg")
             .expect("Content-Type", /json/)
             .send({
                 email: "testeroo@test.com", 
@@ -60,7 +55,7 @@ describe("send err if username or password is not recieved", () => {
     });
     test("empty email", (done) => {
         request(app)
-            .post("/auth")
+            .post("/reg")
             .expect("Content-Type", /json/)
             .send({
                 email: "", 
@@ -77,7 +72,7 @@ describe("send err if username or password is not recieved", () => {
     });
     test("password instead of pwd", (done) => {
         request(app)
-            .post("/auth")
+            .post("/reg")
             .expect("Content-Type", /json/)
             .send({
                 email: "testeroo@test.com", 
@@ -94,33 +89,16 @@ describe("send err if username or password is not recieved", () => {
     });
 });
 
-describe("email doesnt exist", () => {
-    test("email doesnt exist", (done) => {
-        request(app)
-            .post("/auth")
-            .expect("Content-Type", /json/)
-            .send({
-                email: "unregistered@email.com", 
-                pwd: "unregistered-email"
-            })
-            .expect(401)
-            .end((err, res) => {
-                if (err) return done(err);
-                return done()
-            })
-    });
-})
-
 describe("normal request", () => {
-    test("200 status code, cookie and access token sent", (done) => {
+    test("201 status code, cookie and access token sent", (done) => {
         request(app)
-            .post("/auth")
+            .post("/reg")
             .expect("Content-Type", /json/)
             .send({
-                email: "existing@email.com", 
-                pwd: "existing-email"
+                email: "random@email.com", 
+                pwd: "random-email"
             })
-            .expect(200)
+            .expect(201)
             .expect((res) => {
                 res.accessToken && res.cookie
             })
@@ -129,4 +107,31 @@ describe("normal request", () => {
                 return done()
             })
     });
+});
+
+describe("duplicate emails", () => {
+    test("email already exists", (done) => {
+        request(app)
+            .post("/reg")
+            .expect("Content-Type", /json/)
+            .send({
+                email: "random@email.com", 
+                pwd: "random-email"
+            })
+            .expect(409)
+            .end((err, res) => {
+                if (err) return done(err);
+                return done()
+            })
+    });
+    test("delete duplicate", (done) => {
+        request(app)
+        .delete('/deleteUser')
+        .send({email: "random@email.com" })
+        .expect(200)
+        .end((err, res) => {
+            if (err) return done(err);
+            return done()
+        })
+    })
 });
