@@ -12,7 +12,7 @@ const handleLogout = async (req, res) => {
     currentUser.refreshToken = '';
     const result = await currentUser.save();
     //clear cookie
-    res.clearCookie('jwt', { httpOnly: true, samesite: 'None' }); //secure:true in production
+    res.clearCookie('jwt', { httpOnly: true, samesite: 'None', secure: true, }); //secure:true in production
     res.sendStatus(204)
 }
 
