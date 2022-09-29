@@ -1,32 +1,26 @@
 const app = require('../server');
 const request = require('supertest');
+const User = require('../model/User')
 
-// there are no cookies in db
+afterEach(async () => { await User.deleteMany() })
 
-describe("not logged in", () => {
-    test("no cookies found", (done) => {
-        request(app)
-            .get("/logout")
-            .expect(204)
-            .end((err, res) => {
-                if (err) return done(err);
-                return done()
-            })
-    });
+
+test("if 204 when not logged in", async () => {
+    const response = request(app).get("/logout")
+        .expect(204)
 });
 
-describe("normal request", () => {
-    test("cookies were cleared", (done) => {
-        request(app)
-            .get("/logout")
-            .send(
-                req.cookies.jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImV4aXN0aW5nQGVtYWlsLmNvbSIsImlhdCI6MTY2NDQzNjg1NywiZXhwIjoxNjY0NTIzMjU3fQ.LDRZkludX9b_lDnjtT3GI6bdIJBDvyCxB1JPBSt0Q5c'
-            )
-            .expect(204)
-            .end((err, res) => {
-                if (err) return done(err);
-                return done();
-            });
-    });
-});
 
+test("should clear refresh token from db", async () => {
+    const regResponse = await request(app).post('/reg')
+        .send({
+            email: "logout.test@email.com",
+            pwd: "logout1234"
+        })
+        .expect(201)
+    const logoutResponse = request(app).get("/logout")
+        .expect(204)
+    const user = await User.findOne({ email: "logout.test@email.com" })
+    expect(!user.refreshToken)
+
+})

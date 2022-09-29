@@ -1,10 +1,42 @@
 const app = require('../server');
 const request = require('supertest');
+const User = require('../model/User');
 
-//integration tests for reg route
+afterEach( async() => { await User.deleteMany() } )
 
-describe("send err if username or password is not recieved", () => {
-    test("no pwd", (done) => {
+test('should sign up a new user with 201', async () => {
+    const response = await request(app).post('/reg')
+        .send({
+            email: "random@email.com",
+            pwd: "password"
+        })
+        .expect(201)
+        .expect((res) => {
+            res.accesstoken
+        })
+        const user = await User.findOne({email:"random@email.com"})
+        expect (user.password).not.toBe('password')
+        expect (user.refreshToken)
+})
+
+test("should send 409 when email already exists", async () => {
+    const firstRequest = await request(app).post("/reg")
+        .send({
+            email: "random@email.com",
+            pwd: "password"
+        })
+        .expect(201)
+    const secondRequest = await request(app).post("/reg")   
+        .send({
+            email: "random@email.com",
+            pwd: "password"
+        })
+        .expect(409)
+});
+
+
+describe("invalid req data (email / pwd)", () => {
+    test("should send 400 if no pwd", (done) => {
         request(app)
             .post("/reg")
             .expect("Content-Type", /json/)
@@ -20,7 +52,7 @@ describe("send err if username or password is not recieved", () => {
                 return done()
             })
     });
-    test("no email", (done) => {
+    test("should send 400 if no email", (done) => {
         request(app)
             .post("/reg")
             .expect("Content-Type", /json/)
@@ -36,12 +68,12 @@ describe("send err if username or password is not recieved", () => {
                 return done()
             })
     });
-    test("empty pwd", (done) => {
+    test("should send 400 if empty pwd", (done) => {
         request(app)
             .post("/reg")
             .expect("Content-Type", /json/)
             .send({
-                email: "testeroo@test.com", 
+                email: "testeroo@test.com",
                 pwd: ""
             })
             .expect(400)
@@ -53,12 +85,12 @@ describe("send err if username or password is not recieved", () => {
                 return done()
             })
     });
-    test("empty email", (done) => {
+    test("should send 400 if empty email", (done) => {
         request(app)
             .post("/reg")
             .expect("Content-Type", /json/)
             .send({
-                email: "", 
+                email: "",
                 pwd: "password"
             })
             .expect(400)
@@ -70,12 +102,12 @@ describe("send err if username or password is not recieved", () => {
                 return done()
             })
     });
-    test("password instead of pwd", (done) => {
+    test("should send 400 if password instead of pwd", (done) => {
         request(app)
             .post("/reg")
             .expect("Content-Type", /json/)
             .send({
-                email: "testeroo@test.com", 
+                email: "testeroo@test.com",
                 password: "password"
             })
             .expect(400)
@@ -89,49 +121,3 @@ describe("send err if username or password is not recieved", () => {
     });
 });
 
-describe("normal request", () => {
-    test("201 status code, cookie and access token sent", (done) => {
-        request(app)
-            .post("/reg")
-            .expect("Content-Type", /json/)
-            .send({
-                email: "random@email.com", 
-                pwd: "random-email"
-            })
-            .expect(201)
-            .expect((res) => {
-                res.accessToken && res.cookie
-            })
-            .end((err, res) => {
-                if (err) return done(err);
-                return done()
-            })
-    });
-});
-
-describe("duplicate emails", () => {
-    test("email already exists", (done) => {
-        request(app)
-            .post("/reg")
-            .expect("Content-Type", /json/)
-            .send({
-                email: "random@email.com", 
-                pwd: "random-email"
-            })
-            .expect(409)
-            .end((err, res) => {
-                if (err) return done(err);
-                return done()
-            })
-    });
-    test("delete duplicate", (done) => {
-        request(app)
-        .delete('/deleteUser')
-        .send({email: "random@email.com" })
-        .expect(200)
-        .end((err, res) => {
-            if (err) return done(err);
-            return done()
-        })
-    })
-});

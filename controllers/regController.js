@@ -19,7 +19,6 @@ const registerNewUser = async (req, res) => {
             'email': email,
             'password': hashedPwd
         })
-        console.log(result)
     } catch (err) {
         res.status(500).json({ 'message': err.message })
     }
@@ -38,7 +37,6 @@ const registerNewUser = async (req, res) => {
 
     // save refresh token in db
     const result = await User.findOneAndUpdate({ email }, { refreshToken });
-    console.log(result);
 
     // send tokens to the frontend
     res.cookie('jwt', refreshToken, { 'httpOnly': true, samesite: 'None', maxAge: 24 * 60 * 60 * 1000 }); //secure: true

@@ -15,14 +15,12 @@ const createNewAddress = async (req, res) => {
             phone: req.body.phone,
             address: req.body.address
         });
-        console.log(response);
-        res.status(201).json({
+         res.status(201).json({
             "success": `${req.body.lastName}-${req.body.firstName} was added to address book`,
             "response": response
         });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({ err });
+    } catch (error) {
+        res.status(400).json({ error });
     }
 }
 
