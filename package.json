@@ -7,10 +7,9 @@
   "description": "strv backend assignment",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon start.js",
-    "start": "node server.js",
-    "test": "jest"
-  },
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+    },
   "author": "Jacqueline Przybylski",
   "license": "ISC",
     "devDependencies": {

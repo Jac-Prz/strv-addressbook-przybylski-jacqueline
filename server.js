@@ -1,4 +1,6 @@
 require('dotenv').config();
+const mongoose = require('mongoose');
+const PORT = process.env.PORT;
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -40,6 +42,11 @@ app.use(verifyJWT);
 app.use('/addresses', require('./routes/api/addresses'));
 
 
-module.exports = app;
+mongoose.connection.once('connected', () => {
+    console.log('Connected to MongoDB')
+    app.listen(PORT, () => {
+        console.log(`Listening on port ${PORT}`);
+    })
+})
 
 
