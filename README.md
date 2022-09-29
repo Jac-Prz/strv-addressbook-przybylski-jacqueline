@@ -1,10 +1,12 @@
- align="center">STRV Assignment: Address Book RESTful API
+ <h3 align="center"> align="center">STRV Assignment: Address Book RESTful API<h3>
+
 Users can to register/login with an email and password. Once issued JWS access key they can add an entry to their address book.
 Users are stored on MongoDB and the address book on firebase.
 The other CRUD operations to the adressbook will be handled by a frontend.
+
 Endpoint: https://strv-addressbook-przybylski-jacqueline.onrender.com/
 (hosted free on render, may take up to 30 seconds to start up)
-<br>
+
 ------ API Basic Functions ------
 REGISTER a new user: 
 - POST request to '/register'
@@ -23,12 +25,13 @@ ADD ENTRY TO ADDRESS BOOK:
 - POST request to '/addresses' 
 - requires access JWT (sent in response of successful authorization or registration)
 TEST endpoint with postman
-<br>
------- TO RUN LOCALLY ------
+
+
+------ To Run Locally ------
 - Clone and install dependencies
 - You will require the following environment variables including MongoDB: PORT MONGO_CONNECTION_URI JWT_ACCESS_TOKEN_SECRET JWT_REFRESH_TOKEN_SECRET
 - & your Firebase Firestore credentials: serviceAccountKey in json format
-<br>
+
 ------ To Test Locally ------
 Move the app.listen block of code to start.js and require it, as in shown in test branch.
 
