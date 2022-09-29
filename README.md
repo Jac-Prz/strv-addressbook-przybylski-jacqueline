@@ -1,7 +1,7 @@
  <br>
- <h2 align="center"> STRV Assignment: Address Book RESTful API </h2>
+ <h2 align="center"> STRV Assignment: Address Book </h2>
 <br>
-<p> Users can to register/login with an email and password. Once issued JWS access key they can add an entry to their address book.
+<p> A RESTful API where users can register/login with an email and password. Once issued JWS access key they can add an entry to their address book.
 Users are stored on MongoDB and the address book on firebase.
 The other CRUD operations to the adressbook will be handled by a frontend. </p>
 
