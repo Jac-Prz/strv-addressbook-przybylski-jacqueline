@@ -31,6 +31,7 @@ app.use('/logout', require('./routes/logout'))
 app.use(verifyJWT);
 app.use('/addresses', require('./routes/api/addresses'));
 
+//listen
 mongoose.connection.once('connected', () => {
     console.log('Connected to MongoDB')
     app.listen(PORT, () => {
