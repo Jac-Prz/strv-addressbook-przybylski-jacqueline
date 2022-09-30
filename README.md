@@ -8,7 +8,7 @@ The other CRUD operations to the adressbook will be handled by a frontend. </p>
 <p> Endpoint: https://strv-addressbook-przybylski-jacqueline.onrender.com/ <br>
 (hosted free on render, may take up to 30 seconds to start up)</p>
 <br>
-
+<p> note: refreshController updated after source-code submisssion </br>
 
 <h3> ------ API Basic Functions ------ </h3>
 <p>
