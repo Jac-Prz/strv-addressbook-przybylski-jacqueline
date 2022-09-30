@@ -23,7 +23,7 @@ const handleLogin = async (req, res) => {
     const result = await currentUser.save();
     
     // send tokens to the frontend
-    res.cookie('jwt', refreshToken, { 'httpOnly': true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+    res.cookie('jwt', refreshToken, { 'httpOnly': true, samesite: 'None', maxAge: 24 * 60 * 60 * 1000 });
     res.json({ accessToken });
 
 }
