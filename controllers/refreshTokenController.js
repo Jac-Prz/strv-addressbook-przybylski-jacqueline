@@ -1,7 +1,7 @@
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 
-const handleRefreshToken = (req, res) => {
+const handleRefreshToken = async (req, res) => {
 
     // get cookies.jwt (refresh token)
     const cookies = req.cookies;
@@ -9,7 +9,7 @@ const handleRefreshToken = (req, res) => {
     const refreshToken = cookies.jwt;
 
     //find user with same refresh token
-    const currentUser = User.findOne({ refreshToken });
+    const currentUser = await User.findOne({ refreshToken });
     if (!currentUser) return res.sendStatus(403);
 
     //check that refresh token jwts match
